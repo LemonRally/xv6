@@ -1,3 +1,4 @@
+#include <sys/types.h>
 struct stat;
 
 // system calls
