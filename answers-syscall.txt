@@ -1,0 +1,7 @@
+usertrap called syscall
+the memory address of SYS_exec
+0x200000022
+
+the a3 register
+0 isn't mapped in kernel spaced it's reserved to represent NULL
+initcode is the name of the binary that ran when the kernel panicked, its pid is 1
