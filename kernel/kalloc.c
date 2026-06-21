@@ -76,7 +76,28 @@ kalloc(void)
     kmem.freelist = r->next;
   release(&kmem.lock);
 
-  if(r)
-    memset((char*)r, 5, PGSIZE); // fill with junk
-  return (void*)r;
+  if (r)
+    memset((char *)r, 5, PGSIZE); // fill with junk
+  return (void *)r;
+}
+
+uint64
+free_mem(void)
+{
+  struct run *r;
+  unsigned int free_pages = 0;
+
+  acquire(&kmem.lock);
+  r = kmem.freelist;
+  while (r != 0)
+  { // 0 is NULL?
+
+    if (r)
+    {
+      r = r->next;
+      free_pages++;
+    }
+  }
+  release(&kmem.lock);
+  return free_pages * 4096;
 }

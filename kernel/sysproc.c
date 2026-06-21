@@ -5,6 +5,9 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+#include "stat.h"
+// #include "kalloc.c"
 
 uint64
 sys_exit(void)
@@ -55,7 +58,7 @@ sys_sleep(void)
   uint ticks0;
 
   argint(0, &n);
-  if(n < 0)
+  if (n < 0)
     n = 0;
   acquire(&tickslock);
   ticks0 = ticks;
@@ -110,4 +113,25 @@ sys_trace(void)
   {
     return 1;
   }
+}
+
+// addr is a user virtual address, pointing to a struct sysinfo.
+
+uint64
+sys_sysinfo(void)
+{
+  struct sysinfo info;
+  struct proc *p = myproc();
+  uint64 addr;
+  uint64 mem = free_mem();
+  uint64 procs = used_procs();
+  info.freemem = mem;
+  info.nproc = procs;
+
+  argaddr(0, &addr);
+
+  if (copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+
+  return 0;
 }
