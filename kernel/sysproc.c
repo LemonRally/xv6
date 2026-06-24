@@ -71,10 +71,70 @@ sys_sleep(void)
 }
 
 #ifdef LAB_PGTBL
-int
-sys_pgaccess(void)
+int sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+  uint64 start_va;
+  int num_of_pages;
+  uint64 buffer[128]; // 128 * 64 is upper limit for num of pages that can be scanned
+  uint64 user_buffer_addr;
+  pte_t *pte;
+  int i;
+  struct proc *p = myproc();
+  int offset = 0;
+  int buffer_index = 0;
+  int has_been_accessed = 0;
+
+  argaddr(0, &start_va);
+  argint(1, &num_of_pages);
+  argaddr(2, &user_buffer_addr);
+
+  if (num_of_pages > 128 * 64)
+  {
+    return 0; // too many pages
+  }
+
+  // zero the buffer
+  for (i = 0; i < 128; i++)
+  {
+    buffer[i] = 0;
+  }
+
+  for (i = 0; i < num_of_pages; i++)
+  {
+    pte = walk(p->pagetable, start_va, 0);
+
+    if (*pte & PTE_A)
+    {
+      has_been_accessed = 1;
+    }
+    else
+    {
+      has_been_accessed = 0;
+    }
+
+    buffer[buffer_index] = buffer[buffer_index] | (has_been_accessed << offset);
+    offset += 1;
+
+    if (offset == 64)
+    {
+      offset = 0;
+      buffer_index++;
+    }
+
+    if (*pte & PTE_A)
+    {
+      *pte = *pte & (~PTE_A); // zero the PTE_A bit
+    }
+
+    start_va += 4096; // move the va by one page
+  }
+
+  if (copyout(p->pagetable, user_buffer_addr, (char *)&buffer, (buffer_index * 8) + ((1 + (offset - 1) / 8))) < 0)
+  {
+    return -1;
+  }
+
   return 0;
 }
 #endif

@@ -1,0 +1,2 @@
+1. perhaps uptime could be speed up by storing it there? any read only syscall could benefit from this
+2. i don't understand what figures are referenced?

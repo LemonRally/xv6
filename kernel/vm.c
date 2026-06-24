@@ -123,6 +123,8 @@ walkaddr(pagetable_t pagetable, uint64 va)
     return 0;
   if ((*pte & PTE_U) == 0)
     return 0;
+  *pte = *pte | PTE_A;
+
   pa = PTE2PA(*pte);
   return pa;
 }
