@@ -1,0 +1,7 @@
+1. a1 and a2 hold the arguements to the function, a2 holds the 13 in main's call to printf
+2. doesn't seem like he calls g and f because the line is "li	a1,12" which shows the compiler just optimized and didn't call the functions
+3. from "jalr	1536(ra) # 630 <printf>" we know that it's at 630
+4. ra holds the address to return to after printf finishes (38)
+5. output is HE110 World
+6. if big endian then we need 0x726c6400, won't need to change 57616 because the compiler will handle the coversion to bytes correctly
+7. because no additional value was specified it will just read the next byte in memory and treat it as an integer for the printing
