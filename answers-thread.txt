@@ -1,0 +1,9 @@
+if two threads insert simultaneously to the same key, one of them will get overwritten:
+problematic code:
+  if(e){
+    // update the existing key.
+    e->value = value;
+  } else {
+    // the new is new.
+    insert(key, value, &table[i], table[i]);
+  }
